@@ -6,6 +6,9 @@ void ofApp::setup(){
     ofSetFrameRate(30);
     ofSetLogLevel(OF_LOG_VERBOSE);
     
+    eyeBoxWidth = 120;
+    eyeBoxHeight = 120;
+    
     bCalibrated = false;
 
 //   if( !eyes_cascade.load(ofToDataPath("haarcascade_eye_tree_eyeglasses.xml")) ){ printf("--(!)Error loading\n"); return -1; };
@@ -49,23 +52,23 @@ void ofApp::update(){
         // now show
         } else {
             if(tracker.existsCurrent(leftEyeLabel)) {
-                setEyeImage(
+                leftEyeBox = setEyeImage(
                     src
                     , leftEye
                     , eyeFinder.getObject(eyeFinder.getLabel(leftEyeLabel))
-                    , 120
-                    , 120
+                    , eyeBoxWidth
+                    , eyeBoxHeight
                 );
                 leftEye.update();
             }
             
             if(tracker.existsCurrent(rightEyeLabel)) {
-                setEyeImage(
+                rightEyeBox = setEyeImage(
                     src
                     , rightEye
                     , eyeFinder.getObject(eyeFinder.getLabel(rightEyeLabel))
-                    , 120
-                    , 120
+                    , eyeBoxWidth
+                    , eyeBoxHeight
                 );
                 rightEye.update();
             }
@@ -82,14 +85,20 @@ void ofApp::draw(){
 
 
     if(bCalibrated) {
-        leftEye.draw(0, 100);
-        rightEye.draw(ofGetWidth() - rightEye.getWidth(), 100);
+        player.draw(0, 0);
+        ofSetColor(255);
+        ofNoFill();
+        ofRect(leftEyeBox);
+        ofRect(rightEyeBox);
+        
+//        leftEye.draw(0, 100);
+//        rightEye.draw(ofGetWidth() - rightEye.getWidth(), 100);
     } else {
         ofDrawBitmapString("Calibrating...", 20, 20);
     }
 }
 
-void ofApp::setEyeImage(cv::Mat &src, ofImage &dst, ofRectangle roi, int w, int h) {
+ofRectangle ofApp::setEyeImage(cv::Mat &src, ofImage &dst, ofRectangle roi, int w, int h) {
 
     cv::Mat crop;
     cv::Size srcSize = src.size();
@@ -114,6 +123,8 @@ void ofApp::setEyeImage(cv::Mat &src, ofImage &dst, ofRectangle roi, int w, int 
 
     cv::Mat(src, ofxCv::toCv(roi)).copyTo(crop);
     ofxCv::toOf(crop, dst);
+    
+    return roi;
 }
 
 

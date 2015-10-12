@@ -10,7 +10,11 @@ class ofApp : public ofBaseApp{
         bool bCalibrated;
         int leftEyeLabel;
         int rightEyeLabel;
+        int eyeBoxWidth;
+        int eyeBoxHeight;
 		ofVideoPlayer player;
+        ofRectangle leftEyeBox;
+        ofRectangle rightEyeBox;
         ofImage leftEye;
         ofImage rightEye;
         ofxCv::ObjectFinder eyeFinder;
@@ -19,7 +23,7 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
 
-        void setEyeImage(
+        ofRectangle setEyeImage(
             cv::Mat &src
             , ofImage &dst
             , ofRectangle roi
