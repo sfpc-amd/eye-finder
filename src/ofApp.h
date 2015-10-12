@@ -6,9 +6,26 @@
 class ofApp : public ofBaseApp{
 
 	public:
+    
+        bool bCalibrated;
+        int leftEyeLabel;
+        int rightEyeLabel;
+		ofVideoPlayer player;
+        ofImage leftEye;
+        ofImage rightEye;
+        ofxCv::ObjectFinder eyeFinder;
+    
 		void setup();
 		void update();
 		void draw();
+
+        void setEyeImage(
+            cv::Mat &src
+            , ofImage &dst
+            , ofRectangle roi
+            , int w
+            , int h
+        );
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -20,13 +37,5 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		ofVideoPlayer player;
-        int vidWidth;
-        int vidHeight;
-        ofPixels pix;
-        ofImage leftEye;
-        ofImage rightEye;
-        ofxCv::ObjectFinder eyeFinder;
-        std::vector<Rect> eyes;
-		
+
 };

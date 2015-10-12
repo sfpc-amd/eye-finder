@@ -3,16 +3,18 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetVerticalSync(true);
+    ofSetFrameRate(30);
+    ofSetLogLevel(OF_LOG_VERBOSE);
+    
+    bCalibrated = false;
 
 //   if( !eyes_cascade.load(ofToDataPath("haarcascade_eye_tree_eyeglasses.xml")) ){ printf("--(!)Error loading\n"); return -1; };
 
     eyeFinder.setup("haarcascade_eye_tree_eyeglasses.xml");
+    eyeFinder.setPreset(ofxCv::ObjectFinder::Accurate);
 
     player.loadMovie("eyes.mov");
     player.setLoopState(OF_LOOP_NORMAL);
-    
-    vidWidth = player.getWidth();
-    vidHeight = player.getHeight();
     
     player.play();
     
@@ -21,49 +23,98 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     player.update();
+    
     if(player.isFrameNew()) {
         cv::Mat src = ofxCv::toCv(player.getPixelsRef());
         eyeFinder.update(src);
-
-        if(eyeFinder.size() >= 1) {
-//            cv::Mat leftEyeMat;
-//            cv::Rect leftEyeRect;
-            ofRectangle leftEyeRect;
-
-            
-            // this seems a little silly, can't we just
-            // pull a cv::Rect directly
-            leftEyeRect = eyeFinder.getObject(1);
-//            leftEyeMat = src(leftEyeRect);
-            leftEye.setFromPixels(player.getPixelsRef());
-            leftEye.crop(
-                leftEyeRect.getX()
-                , leftEyeRect.getY()
-                , leftEyeRect.getWidth()
-                , leftEyeRect.getHeight()
-            );
-            
-//            ofxCv::toOf(leftEyeMat, leftEye);
-        }
+        ofxCv::RectTracker tracker = eyeFinder.getTracker();
         
-        if(eyeFinder.size() >= 2) {
-        
+        // do some basic calibration
+        if(!bCalibrated) {
+            if(eyeFinder.size() >= 2) {
+                if(eyeFinder.getObject(0).x < eyeFinder.getObject(1).x){
+                    leftEyeLabel = eyeFinder.getLabel(0);
+                    rightEyeLabel = eyeFinder.getLabel(1);
+                } else {
+                    leftEyeLabel = eyeFinder.getLabel(1);
+                    rightEyeLabel = eyeFinder.getLabel(0);
+                }
+                
+                printf("labels, %i, %i", leftEyeLabel, rightEyeLabel);
+                
+            }
+            bCalibrated = true;
+            player.firstFrame();
+            
+        // now show
+        } else {
+            if(tracker.existsCurrent(leftEyeLabel)) {
+                setEyeImage(
+                    src
+                    , leftEye
+                    , eyeFinder.getObject(eyeFinder.getLabel(leftEyeLabel))
+                    , 120
+                    , 120
+                );
+                leftEye.update();
+            }
+            
+            if(tracker.existsCurrent(rightEyeLabel)) {
+                setEyeImage(
+                    src
+                    , rightEye
+                    , eyeFinder.getObject(eyeFinder.getLabel(rightEyeLabel))
+                    , 120
+                    , 120
+                );
+                rightEye.update();
+            }
         }
+    
+
 
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-//    player.draw(0, 0);
-    
-//    ofSetColor(255);
-//    eyeFinder.draw();
+    ofBackground(0);
 
-    leftEye.draw(0, 0);
 
+    if(bCalibrated) {
+        leftEye.draw(0, 100);
+        rightEye.draw(ofGetWidth() - rightEye.getWidth(), 100);
+    } else {
+        ofDrawBitmapString("Calibrating...", 20, 20);
+    }
 }
 
+void ofApp::setEyeImage(cv::Mat &src, ofImage &dst, ofRectangle roi, int w, int h) {
+
+    cv::Mat crop;
+    cv::Size srcSize = src.size();
+    ofPoint center = roi.getCenter();
+    
+    roi.setFromCenter(center.x, center.y, w, h);
+
+    if(roi.getRight() > srcSize.width) {
+        roi.translateX(-roi.getRight());
+    }
+    if(roi.getLeft() < 0) {
+        roi.translateX(-roi.getLeft());
+    }
+    
+    if(roi.getBottom() > srcSize.height) {
+        roi.translateY(-roi.getBottom());
+    }
+    if(roi.getTop() < 0) {
+        roi.translateY(-roi.getTop());
+    }
+
+
+    cv::Mat(src, ofxCv::toCv(roi)).copyTo(crop);
+    ofxCv::toOf(crop, dst);
+}
 
 
 //--------------------------------------------------------------
