@@ -40,6 +40,7 @@
 		C120E8E31BCC42A1000C015C /* PAW.cc in Sources */ = {isa = PBXBuildFile; fileRef = C120E8D71BCC42A1000C015C /* PAW.cc */; };
 		C120E8E41BCC42A1000C015C /* PDM.cc in Sources */ = {isa = PBXBuildFile; fileRef = C120E8D81BCC42A1000C015C /* PDM.cc */; };
 		C120E8E51BCC42A1000C015C /* Tracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = C120E8D91BCC42A1000C015C /* Tracker.cc */; };
+		C120E8F11BCCAD69000C015C /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = C120E8F01BCCAD69000C015C /* README.md */; };
 		C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE75A3FBA2C2D87D14F06FE6 /* ObjectFinder.cpp */; };
 		D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A4DD23693DFAB8EC05FAA5D /* ofxCvShortImage.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
@@ -228,6 +229,10 @@
 		C120E8D71BCC42A1000C015C /* PAW.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PAW.cc; sourceTree = "<group>"; };
 		C120E8D81BCC42A1000C015C /* PDM.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PDM.cc; sourceTree = "<group>"; };
 		C120E8D91BCC42A1000C015C /* Tracker.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Tracker.cc; sourceTree = "<group>"; };
+		C120E8EB1BCC9B67000C015C /* ofxThreadedImageSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxThreadedImageSaver.h; sourceTree = "<group>"; };
+		C120E8EE1BCC9FD3000C015C /* ofxImageSequenceRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxImageSequenceRecorder.h; sourceTree = "<group>"; };
+		C120E8EF1BCCAB7E000C015C /* convert_video.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = convert_video.sh; sourceTree = "<group>"; };
+		C120E8F01BCCAD69000C015C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C1C56D20A1A57DC44096BFE7 /* ofxCvContourFinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvContourFinder.h; path = ../../../addons/ofxOpenCv/src/ofxCvContourFinder.h; sourceTree = SOURCE_ROOT; };
 		C4FB85020773DA0F09B8B6CE /* ts_gtest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ts_gtest.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/ts/ts_gtest.h; sourceTree = SOURCE_ROOT; };
 		C6151136D101F857DAE12722 /* ofxCvImage.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxCvImage.cpp; path = ../../../addons/ofxOpenCv/src/ofxCvImage.cpp; sourceTree = SOURCE_ROOT; };
@@ -649,6 +654,7 @@
 				A0B90D3B0ADB9C1716816714 /* ofxOpenCv */,
 				6025FAF6414C2CA589764D26 /* ofxCv */,
 				C120E8B51BCC42A1000C015C /* ofxFaceTracker */,
+				C120E8EC1BCC9FD3000C015C /* ofxImageSequenceRecorder */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -783,6 +789,23 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		C120E8EC1BCC9FD3000C015C /* ofxImageSequenceRecorder */ = {
+			isa = PBXGroup;
+			children = (
+				C120E8ED1BCC9FD3000C015C /* src */,
+			);
+			name = ofxImageSequenceRecorder;
+			sourceTree = "<group>";
+		};
+		C120E8ED1BCC9FD3000C015C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C120E8EE1BCC9FD3000C015C /* ofxImageSequenceRecorder.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxImageSequenceRecorder/src;
+			sourceTree = "<group>";
+		};
 		C58CC92A5283B95AA31D50FB /* video */ = {
 			isa = PBXGroup;
 			children = (
@@ -871,6 +894,8 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				C120E8F01BCCAD69000C015C /* README.md */,
+				C120E8EF1BCCAB7E000C015C /* convert_video.sh */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -887,6 +912,7 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				C120E8EB1BCC9B67000C015C /* ofxThreadedImageSaver.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1030,6 +1056,7 @@
 				C120E8E41BCC42A1000C015C /* PDM.cc in Sources */,
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
 				C120E8DF1BCC42A1000C015C /* FCheck.cc in Sources */,
+				C120E8F11BCCAD69000C015C /* README.md in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
 				C120E8DC1BCC42A1000C015C /* ofxFaceTracker.cpp in Sources */,

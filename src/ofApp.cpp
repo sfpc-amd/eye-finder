@@ -10,17 +10,25 @@ void ofApp::setup(){
     eyeBoxHeight = 120;
     
     bCalibrated = false;
-
-//   if( !eyes_cascade.load(ofToDataPath("haarcascade_eye_tree_eyeglasses.xml")) ){ printf("--(!)Error loading\n"); return -1; };
+    bSaving = false;
 
     eyeFinder.setup("haarcascade_eye_tree_eyeglasses.xml");
-    eyeFinder.setPreset(ofxCv::ObjectFinder::Accurate);
+    eyeFinder.setPreset(ofxCv::ObjectFinder::Fast);
+    eyeFinder.setRescale(.5);
 
     player.loadMovie("eyes.mov");
-    player.setLoopState(OF_LOOP_NORMAL);
+    player.setLoopState(OF_LOOP_NONE);
+//    eyesBBox = ofRectangle(100, 0, player.getWidth()-100, player.getHeight() - 150);
     
     player.play();
     
+    ofDirectory::createDirectory("media/left", true, true);
+    ofDirectory::createDirectory("media/right", true, true);
+   
+    leftEyeRecorder.setPrefix(ofToDataPath("media/left/frame_"));
+    leftEyeRecorder.setFormat("png");
+    rightEyeRecorder.setPrefix(ofToDataPath("media/right/frame_"));
+    rightEyeRecorder.setFormat("png");
 }
 
 //--------------------------------------------------------------
@@ -31,6 +39,7 @@ void ofApp::update(){
         cv::Mat src = ofxCv::toCv(player.getPixelsRef());
         eyeFinder.update(src);
         ofxCv::RectTracker tracker = eyeFinder.getTracker();
+        
         
         // do some basic calibration
         if(!bCalibrated) {
@@ -43,19 +52,17 @@ void ofApp::update(){
                     rightEyeLabel = eyeFinder.getLabel(0);
                 }
                 
-                printf("labels, %i, %i", leftEyeLabel, rightEyeLabel);
-                
+                bCalibrated = true;
+                player.firstFrame();
             }
-            bCalibrated = true;
-            player.firstFrame();
-            
         // now show
         } else {
+            
             if(tracker.existsCurrent(leftEyeLabel)) {
                 leftEyeBox = setEyeImage(
                     src
                     , leftEye
-                    , eyeFinder.getObject(eyeFinder.getLabel(leftEyeLabel))
+                    , eyeFinder.getObjectSmoothed(eyeFinder.getLabel(leftEyeLabel))
                     , eyeBoxWidth
                     , eyeBoxHeight
                 );
@@ -66,15 +73,24 @@ void ofApp::update(){
                 rightEyeBox = setEyeImage(
                     src
                     , rightEye
-                    , eyeFinder.getObject(eyeFinder.getLabel(rightEyeLabel))
+                    , eyeFinder.getObjectSmoothed(eyeFinder.getLabel(rightEyeLabel))
                     , eyeBoxWidth
                     , eyeBoxHeight
                 );
                 rightEye.update();
             }
-        }
-    
+            
+            if(bSaving) {
+                leftEyeRecorder.addFrame(leftEye);
+                rightEyeRecorder.addFrame(rightEye);
 
+                if(player.getIsMovieDone()) {
+                    leftEyeRecorder.stopThread();
+                    rightEyeRecorder.stopThread();
+                    bSaving = false;
+                }
+            }
+        }
 
     }
 }
@@ -88,13 +104,25 @@ void ofApp::draw(){
         player.draw(0, 0);
         ofSetColor(255);
         ofNoFill();
-        ofDrawBitmapString("LEFT", leftEyeBox.getLeft(), leftEyeBox.getBottom());
-        ofRect(leftEyeBox);
-        ofDrawBitmapString("RIGHT", rightEyeBox.getLeft(), rightEyeBox.getBottom());
-        ofRect(rightEyeBox);
+//        ofRect(eyesBBox);
         
-//        leftEye.draw(0, 100);
-//        rightEye.draw(ofGetWidth() - rightEye.getWidth(), 100);
+        ofPushMatrix();
+//            ofTranslate(eyesBBox.x, eyesBBox.y);
+            ofDrawBitmapString("LEFT", leftEyeBox.getLeft(), leftEyeBox.getBottom());
+            ofRect(leftEyeBox);
+            
+            ofDrawBitmapString("RIGHT", rightEyeBox.getLeft(), rightEyeBox.getBottom());
+            ofRect(rightEyeBox);
+        ofPopMatrix();
+        leftEye.draw(0, player.getHeight());
+        rightEye.draw(eyeBoxWidth, player.getHeight());
+        
+        ofDrawBitmapString(ofToString(eyeFinder.size()), 10, ofGetHeight());
+        
+        if(bSaving) {
+            ofDrawBitmapString("SAVING", 20, 20);
+        }
+        
     } else {
         ofDrawBitmapString("Calibrating...", 20, 20);
     }
@@ -130,6 +158,12 @@ ofRectangle ofApp::setEyeImage(cv::Mat &src, ofImage &dst, ofRectangle roi, int 
 }
 
 
+void ofApp::exit(){
+    leftEyeRecorder.waitForThread();
+    rightEyeRecorder.waitForThread();
+}
+
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
@@ -137,7 +171,32 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
+    if(key == 'r') {
+        player.firstFrame();
+        player.play();
+    } else if (key == 's') {
+        if(!bSaving) {
+            bSaving = true;
+            player.firstFrame();
+            player.setLoopState(OF_LOOP_NONE);
 
+            if(!leftEyeRecorder.isThreadRunning()) {
+                leftEyeRecorder.startThread(false, true);
+            }
+            if(!rightEyeRecorder.isThreadRunning()) {
+                rightEyeRecorder.startThread(false, true);
+            }
+
+            player.play();
+        }
+    } else if (key == '1') {
+        eyeFinder.setPreset(ofxCv::ObjectFinder::Fast);
+        eyeFinder.setRescale(.5);
+    } else if (key == '2') {
+        eyeFinder.setPreset(ofxCv::ObjectFinder::Accurate);
+    } else if (key == '3') {
+        eyeFinder.setPreset(ofxCv::ObjectFinder::Sensitive);
+    }
 }
 
 //--------------------------------------------------------------
