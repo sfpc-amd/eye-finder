@@ -16,7 +16,7 @@ void ofApp::setup(){
     eyeFinder.setPreset(ofxCv::ObjectFinder::Fast);
     eyeFinder.setRescale(.5);
 
-    player.loadMovie("eyes.mov");
+    player.loadMovie("media/eyes.mov");
     player.setLoopState(OF_LOOP_NONE);
 //    eyesBBox = ofRectangle(100, 0, player.getWidth()-100, player.getHeight() - 150);
     
