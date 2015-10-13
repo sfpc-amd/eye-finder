@@ -88,7 +88,9 @@ void ofApp::draw(){
         player.draw(0, 0);
         ofSetColor(255);
         ofNoFill();
+        ofDrawBitmapString("LEFT", leftEyeBox.getLeft(), leftEyeBox.getBottom());
         ofRect(leftEyeBox);
+        ofDrawBitmapString("RIGHT", rightEyeBox.getLeft(), rightEyeBox.getBottom());
         ofRect(rightEyeBox);
         
 //        leftEye.draw(0, 100);

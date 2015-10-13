@@ -18,7 +18,7 @@ class ofApp : public ofBaseApp{
         ofImage leftEye;
         ofImage rightEye;
         ofxCv::ObjectFinder eyeFinder;
-    
+
 		void setup();
 		void update();
 		void draw();
