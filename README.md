@@ -6,6 +6,7 @@ Tool for detecting and exporting eyes from video.
 Todo
 ----
 
+- [ ] Commenting and refactoring
 - [ ] Add GUI for
     - [ ] Controlling object finder settings
     - [ ] Controlling recording settings
